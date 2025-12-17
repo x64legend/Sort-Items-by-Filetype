@@ -33,23 +33,37 @@ function Move-ItemsByType {
         "*.jpeg", 
         "*.heic", 
         "*.svg", 
-        "*.webp")
+        "*.webp"
+        "*.ico", 
+        "*.tiff"
+        "*.bmp"
+        "*.raw"
+        "*.psd"
+        "*.xcf")
 
     $documentFileTypes = @(
         "*.docx", 
         "*.doc", 
         "*.txt", 
-        "*.pdf")
+        "*.pdf"
+        "*.odt", 
+        "*.rtf"
+        "*.md")
 
     $spreadsheetFileTypes = @(
         "*.csv", 
-        "*.xlsx")
+        "*.xlsx"
+        "*.xls")
 
     $installerFileTypes = @(
         "*.exe", 
         "*.msi", 
         "*.zip", 
-        "*.7z")
+        "*.7z", 
+        "*.rar",
+        "*.dmg",
+        "*.tar",
+        "*.gz")
     
     # Change to source directory
     Set-Location $sourcePath
@@ -87,47 +101,32 @@ $DocumentsPath = Read-Host "Enter the destination path for documents"
 $SpreadsheetsPath = Read-Host "Enter the destination path for spreadsheets"
 $InstallersPath = Read-Host "Enter the destination path for installers"
 
+# Define user
+$user = [System.Environment]::UserName
+
 # Move files with defaults - set to preferred path
 if ([string]::IsNullOrWhiteSpace($SourcePath)) {
-    $user = [System.Environment]::UserName
     $SourcePath = "C:\Users\$user\Downloads"
 }
 
 # Move pictures files with defaults
 if ([string]::IsNullOrWhiteSpace($PicturesPath)) {
     $PicturesPath = "C:\Users\$user\OneDrive\Pictures"
-    $pathTest = Test-Path $PicturesPath
-    if (-not $pathTest) {
-        New-Item -Path $PicturesPath -ItemType Directory -Force
-}
 }
 
 # Move document files with defaults
 if ([string]::IsNullOrWhiteSpace($DocumentsPath)) {
     $DocumentsPath = "C:\Users\$user\OneDrive\Documents"
-    $pathTest = Test-Path $DocumentsPath
-    if (-not $pathTest) {
-        New-Item -Path $DocumentsPath -ItemType Directory -Force
-    }
-
 }
 
 # Move spreadsheet files with defaults
 if ([string]::IsNullOrWhiteSpace($SpreadsheetsPath)) {
     $SpreadsheetsPath = "C:\Users\$user\OneDrive\Documents\Spreadsheets"
-    $pathTest = Test-Path $SpreadsheetsPath
-    if (-not $pathTest) {
-        New-Item -Path $SpreadsheetsPath -ItemType Directory -Force
-    }
 }
 
 # Move installer files with defaults
 if ([string]::IsNullOrWhiteSpace($InstallersPath)) {
     $InstallersPath = "C:\Users\$user\OneDrive\Documents\Installers"
-    $pathTest = Test-Path $InstallersPath
-    if (-not $pathTest) {
-        New-Item -Path $InstallersPath -ItemType Directory -Force
-    }
 }
 
 # Move files
