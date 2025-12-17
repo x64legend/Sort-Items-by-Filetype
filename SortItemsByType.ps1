@@ -1,25 +1,134 @@
+<#
+ * Project Name : Sort Items by Type
+ * File Name    : SortItemsByType.ps1
+ * Author       : Sydnie Barnes
+ * Created Date : 2024-11-12
+ * Last Updated : 2025-12-17
+ * Version      : v1.2.0
+ * Description  : Sorts items by file type into designated folders
+ * Dependencies : None
+ * Notes        : None
+#>
+
 # Define the paths
-$sourcePath = ""
-$picturesPath = ""
-$documentsPath = ""
-$spreadsheetsPath = ""
-$installersPath = ""
 
+function Move-ItemsByType {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$SourcePath,
 
-Set-Location $sourcePath
+        [string]$PicturesPath,
 
-# Move pictures
-Get-ChildItem -Name "*.png","*.jpg","*.gif","*.jpeg","*.heic","*.svg","*.webp" -Recurse | Move-Item -Destination $picturesPath
-Write-Host "Pictures have been moved."
+        [string]$DocumentsPath,
 
-# Move documents
-Get-ChildItem -Name "*.docx","*.doc","*.txt","*.pdf" -Recurse | Move-Item -Destination $documentsPath
-Write-Host "Documents have been moved."
+        [string]$SpreadsheetsPath,
 
-# Move spreadhseets
-Get-ChildItem -Name "*.csv","*.docx" -Recurse | Move-Item -Destination $spreadsheetsPath
-Write-Host "Spreadsheets have been moved."
+        [string]$InstallersPath
+    )
 
-# Move installers
-Get-ChildItem -name "*.exe","*.msi","*.zip" -Recurse | Move-item -Destination $installersPath
-Write-Host "Installers have been moved."
+    $pictureFileTypes = @(
+        "*.png", 
+        "*.jpg", 
+        "*.gif", 
+        "*.jpeg", 
+        "*.heic", 
+        "*.svg", 
+        "*.webp")
+
+    $documentFileTypes = @(
+        "*.docx", 
+        "*.doc", 
+        "*.txt", 
+        "*.pdf")
+
+    $spreadsheetFileTypes = @(
+        "*.csv", 
+        "*.xlsx")
+
+    $installerFileTypes = @(
+        "*.exe", 
+        "*.msi", 
+        "*.zip", 
+        "*.7z")
+    
+    # Change to source directory
+    Set-Location $sourcePath
+
+    # Move pictures
+    foreach ($type in $pictureFileTypes) {
+        Get-ChildItem -Name $type -Recurse | Move-Item -Destination $picturesPath -Force
+        Write-Host "Pictures of type $type have been moved to $picturesPath." -ForegroundColor Magenta
+    }
+
+    # Move documents
+    foreach ($type in $documentFileTypes) {
+        Get-ChildItem -Name $type -Recurse | Move-Item -Destination $documentsPath -Force
+        Write-Host "Documents of type $type have been moved to $documentsPath." -ForegroundColor Blue
+    }
+
+    # Move spreadhseets
+    foreach ($type in $spreadsheetFileTypes) {
+        Get-ChildItem -Name $type -Recurse | Move-Item -Destination $spreadsheetsPath -Force
+        Write-Host "Spreadsheets of type $type have been moved to $spreadsheetsPath." -ForegroundColor Green
+    }
+
+    # Move installers
+    foreach ($type in $installerFileTypes) {
+        Get-ChildItem -Name $type -Recurse | Move-Item -Destination $installersPath -Force
+        Write-Host "Installers of type $type have been moved to $installersPath." -ForegroundColor Yellow
+    }
+
+}
+
+# Move files
+$SourcePath = Read-Host "Enter the source path (where files are currently located)"
+$PicturesPath = Read-Host "Enter the destination path for pictures"
+$DocumentsPath = Read-Host "Enter the destination path for documents"
+$SpreadsheetsPath = Read-Host "Enter the destination path for spreadsheets"
+$InstallersPath = Read-Host "Enter the destination path for installers"
+
+# Move files with defaults - set to preferred path
+if ([string]::IsNullOrWhiteSpace($SourcePath)) {
+    $user = [System.Environment]::UserName
+    $SourcePath = "C:\Users\$user\Downloads"
+}
+
+# Move pictures files with defaults
+if ([string]::IsNullOrWhiteSpace($PicturesPath)) {
+    $PicturesPath = "C:\Users\$user\OneDrive\Pictures"
+    $pathTest = Test-Path $PicturesPath
+    if (-not $pathTest) {
+        New-Item -Path $PicturesPath -ItemType Directory -Force
+}
+}
+
+# Move document files with defaults
+if ([string]::IsNullOrWhiteSpace($DocumentsPath)) {
+    $DocumentsPath = "C:\Users\$user\OneDrive\Documents"
+    $pathTest = Test-Path $DocumentsPath
+    if (-not $pathTest) {
+        New-Item -Path $DocumentsPath -ItemType Directory -Force
+    }
+
+}
+
+# Move spreadsheet files with defaults
+if ([string]::IsNullOrWhiteSpace($SpreadsheetsPath)) {
+    $SpreadsheetsPath = "C:\Users\$user\OneDrive\Documents\Spreadsheets"
+    $pathTest = Test-Path $SpreadsheetsPath
+    if (-not $pathTest) {
+        New-Item -Path $SpreadsheetsPath -ItemType Directory -Force
+    }
+}
+
+# Move installer files with defaults
+if ([string]::IsNullOrWhiteSpace($InstallersPath)) {
+    $InstallersPath = "C:\Users\$user\OneDrive\Documents\Installers"
+    $pathTest = Test-Path $InstallersPath
+    if (-not $pathTest) {
+        New-Item -Path $InstallersPath -ItemType Directory -Force
+    }
+}
+
+# Move files
+Move-ItemsByType -SourcePath $SourcePath -PicturesPath $PicturesPath -DocumentsPath $DocumentsPath -SpreadsheetsPath $SpreadsheetsPath -InstallersPath $InstallersPath
